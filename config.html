@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="magicmouse configurator">
+  <title>magicmouse configurator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css">
+  <style>
+    .button-danger {
+      background-color: black;
+      border-color: black;
+    }
+    .button-inline {
+      padding-left: 1em;
+      padding-right: 1em;
+      display: inline-block;
+      margin: 0;
+    }
+    td > input {
+      margin: 0;
+    }
+    td > select {
+      margin: 0;
+    }
+    .lasttd {
+      text-align: right;
+    }
+    label {
+      display: inline;
+    }
+    .inline-sel {
+      display: inline-block;
+      width: 40%;
+    }
+    hr {
+      margin-top: 0em;
+      margin-bottom: 1em;
+    }
+    .invisible {
+      display: none;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 240px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      padding: 5px 0;
+      border-radius: 6px;
+
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -120px;
+
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    .footer-ver {
+      position: fixed;
+      right: 3px;
+      bottom: 3px;
+    }
+
+  </style>
+  <script type="text/javascript">
+    var CFG_VERSION = 0x00010000;
+    var CFG_MAGIC   = 0x1337F00D;
+    var MAX_RULES   = 8;
+
+    var keylist = [
+      // Characters
+      [  4, "A" ], [  5, "B" ], [  6, "C" ], [  7, "D" ], [  8, "E" ], [  9, "F" ],
+      [ 10, "G" ], [ 11, "H" ], [ 12, "I" ], [ 13, "J" ], [ 14, "K" ], [ 15, "L" ],
+      [ 16, "M" ], [ 17, "N" ], [ 18, "O" ], [ 19, "P" ], [ 20, "Q" ], [ 21, "R" ],
+      [ 22, "S" ], [ 23, "T" ], [ 24, "U" ], [ 25, "V" ], [ 26, "W" ], [ 27, "X" ],
+      [ 28, "Y" ], [ 29, "Z" ], [ 30, "1" ], [ 31, "2" ], [ 32, "3" ], [ 33, "4" ],
+      [ 35, "5" ], [ 36, "6" ], [ 37, "7" ], [ 38, "8" ], [ 39, "9" ], [ 40, "ENTER" ],
+
+      [ 41, "ESCAPE" ], [ 42, "BACKSPACE" ], [ 43, "TAB" ], [ 44, "SPACE" ],
+      [ 45, "-" ], [ 46, "+" ], [ 47, "[ {" ], [ 48, "] }" ],
+
+      // Function keys
+      [ 58, "F1" ], [ 59, "F2" ], [ 60, "F3" ], [ 61, "F4" ], [ 62, "F5" ], [ 63, "F6" ],
+      [ 64, "F7" ], [ 65, "F8" ], [ 66, "F9" ], [ 67, "F10" ], [ 68, "F11" ], [ 69, "F12" ],
+
+      // Navigation Keys
+      [ 70, "Print Screen" ], [ 72, "Pause" ], [ 73, "Insert" ], [ 74, "Home" ], 
+      [ 75, "Page Up" ], [ 78, "Page Down" ],
+      [ 79, "Right arrow" ], [ 80, "Left arrow" ], [ 81, "Down arrow" ], [ 82, "Up arrow" ], 
+
+      // Numpad
+      [ 84, "Keypad /" ], [ 85, "Keypad *" ], [ 86, "Keypad -" ], [ 87, "Keypad +" ],
+      [ 88, "Keypad Enter" ],
+      [ 89, "Keypad 1" ], [ 90, "Keypad 2" ], [ 91, "Keypad 3" ], [ 92, "Keypad 4" ],
+      [ 93, "Keypad 5" ], [ 94, "Keypad 6" ], [ 95, "Keypad 7" ], [ 96, "Keypad 8" ],
+      [ 97, "Keypad 9" ], [ 98, "Keypad 0" ], [ 99, "Keypad ." ],
+
+      // Media Keys
+      [127, "Mute" ], [128, "Volume Up" ], [129, "Volume Down" ],
+    ];
+    var devt_desc = ["Mouse", "Keyboard"];
+    var mode_desc = [
+      // Mouse [0]
+      [
+        [
+          "Left-Right",
+          "The cursor will move the specified amount of pixels left and right",
+          " px",
+        ],
+        [
+          "Up-Down",
+          "The cursor will move the specified amount of pixels up and down",
+          " px",
+        ],
+        [
+          "Circle",
+          "The cursor will move in a circular shape of the specified radius",
+          " px",
+        ],
+        [
+          "Random",
+          "The cursor will move the specified amount of pixels in a random direction",
+          " px",
+        ],
+        [
+          "Scroll Wheel Up-Down",
+          "The mouse scroll wheel will scroll up and down the specified amount",
+          " px",
+        ],
+      ],
+      // Keyboard [1]
+      [
+        [
+          "Type Key",
+          "The specified key will be simulated, simulating a human pressing and then releasing the key",
+          keylist,
+        ],
+      ],
+    ];
+    var mode_desc_combo = [], devt_desc_combo = [];
+
+    function concat8(arrays) {
+      var flen = arrays.reduce((acc, value) => acc + value.length, 0);
+      var res = new Uint8Array(flen);
+      var l = 0;
+      for(let ar of arrays) {
+        res.set(ar, l);
+        l += ar.length;
+      }
+      return res;
+    }
+
+    function pad8(buf, maxlen) {
+      var p = new Uint8Array(maxlen - buf.length);
+      return concat8([buf, p]);
+    }
+
+    function w32le(num) {
+      return new Uint8Array([
+        num & 0xff,
+        (num >> 8) & 0xff,
+        (num >> 16) & 0xff,
+        (num >> 24) & 0xff,
+      ]);
+    }
+
+    function btrim(buf) {
+      let vu8 = new Uint8Array(buf);
+      for (var i = 0; i < vu8.length; i++)
+        if (vu8[i] == 0)
+          return buf.slice(0, i);
+      return buf;
+    }
+
+    function connectError(errmsg) {
+      alert(errmsg); // FIXME
+    }
+
+    // Given a DataView into a buffer, generates the checksum
+    function calc_chk(dv) {
+      var ret = 0xc1f94e12;
+	    for (var i = 0; i < dv.byteLength; i += 4)
+    		ret ^= dv.getUint32(i, true);
+    	return ret;
+    }
+
+    // Generates a valid config by serializing the current user-data
+    function generate_config() {
+      // Generate info device
+      var vidpidsel = document.getElementById('vidpid').value;
+      var vidpid = parseInt(vidpidsel.substring(0, 8), 16);
+      var stv = vidpidsel.substring(9);
+      var p = stv.indexOf("|");
+      var manuf = stv.substring(0, p);
+      var devnm = stv.substring(p + 1);
+
+      var encoder = new TextEncoder("utf-8");
+      var man8 = pad8(encoder.encode(manuf), 64);
+      var dev8 = pad8(encoder.encode(devnm), 64);
+
+      var h2 = new Uint8Array([
+        E("modekey").value,             // 0-2 or 0xFF
+        E("modetime").value,            // 0-N modes
+        E("def_ena").checked ? 1 : 0,
+        fakecfg["rules"].length,
+      ]);
+
+      var rules = [];
+      for (var i = 0; i < fakecfg["rules"].length; i++) {
+        var pr = new Uint8Array([
+          fakecfg["rules"][i]["rtype"],
+          fakecfg["rules"][i]["rdata"],
+          fakecfg["rules"][i]["rmode"],
+          fakecfg["rules"][i]["rflag"],
+        ]);
+
+        rules.push(concat8([
+          w32le(fakecfg["rules"][i]["period"]), pr
+        ]));
+      }
+      for (var i = 0; i < MAX_RULES - fakecfg["rules"].length; i++)
+        rules.push(new Uint8Array(8));
+
+      var payload = concat8([w32le(vidpid), man8, dev8, h2, concat8(rules)]);
+
+      var h = concat8([
+        w32le(CFG_MAGIC),
+        w32le(CFG_VERSION),
+        w32le(fakecfg["cfg-rev"] + 1),
+        w32le(calc_chk(new DataView(payload.buffer))),
+      ]);
+
+      return concat8([h, payload]);
+    }
+
+    // Formats time in a user-friendly way
+    function fmtTime(tms) {
+      var ret = "";
+      if (tms >= 3600000) {
+        ret += Math.floor(tms / 3600000) + "h";
+        tms -= Math.floor(tms / 3600000) * 3600000;
+      }
+      if (tms >= 60000) {
+        ret += (Math.floor(tms / 60000) % 60) + "m";
+        tms -= Math.floor(tms / 60000) * 60000;
+      }
+      if (tms >= 1000) {
+        ret += (Math.floor(tms / 1000) % 60) + "s";
+        tms -= Math.floor(tms / 1000) * 1000;
+      }
+      if (tms > 0)
+        ret += (tms) + "ms";
+      return ret;
+    }
+
+    async function disconnect_device() {
+      await device.close();
+      device = null;
+      E("connbutt").classList.remove("invisible");
+      E("config_devinfo").classList.add("invisible");
+      E("config_editor").classList.add("invisible");
+    };
+
+    async function push_config() {
+      // Serialize configuration
+      var cfgpayload = generate_config();
+
+      // Push it to the device
+      var res = await device.controlTransferOut({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xfe,  // Write config
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        }, cfgpayload);
+
+      if (res.status != "ok") {
+        alert("There was an unexpected error while writing the new configuration!");
+        return;
+      }
+
+      // Device resets itself after push, so detach and reset page
+      await disconnect_device();
+
+      alert("Config updated successfully! The device has disconnected and rebooted!");
+    }
+
+    function parseConfig(rawresp) {
+      var mgc = rawresp.data.getUint32( 0, true);
+      var ver = rawresp.data.getUint32( 4, true);
+      var rev = rawresp.data.getUint32( 8, true);
+      var chk = rawresp.data.getUint32(12, true);
+
+      var vidpid = rawresp.data.getUint32(16, true);
+      var manuf = btrim(rawresp.data.buffer.slice(20, 20+64));
+      var prodn = btrim(rawresp.data.buffer.slice(84, 84+64));
+
+      var toggle_key = rawresp.data.getUint8(148);
+      var toggle_mod = rawresp.data.getUint8(149);
+      var def_enable = rawresp.data.getUint8(150);
+      var rule_count = rawresp.data.getUint8(151);
+
+      var f0 = (vidpid >> 16).toString(16);
+      var f1 = (vidpid & 0xffff).toString(16);
+      while (f0.length < 4)
+        f0 = "0" + f0;
+      while (f1.length < 4)
+        f1 = "0" + f1;
+
+      var rules = [];
+      for (var i = 0; i < MAX_RULES; i++) {
+        var p = rawresp.data.getUint32(152 + i*8 + 0, true);
+        if (p) {
+          rules.push({
+            "period": p,
+            "rtype":  rawresp.data.getUint8 (152 + i*8 + 4),
+            "rdata":  rawresp.data.getUint8 (152 + i*8 + 5),
+            "rmode":  rawresp.data.getUint8 (152 + i*8 + 6),
+            "rflag":  rawresp.data.getUint8 (152 + i*8 + 7),
+          });
+        }
+      }
+
+      var decoder = new TextDecoder("utf-8");
+      return {
+        "cfg-rev": rev,
+        "vid-pid": f0 + f1,
+        "manufacturer": decoder.decode(manuf),
+        "product": decoder.decode(prodn),
+        "toggle-key": toggle_key,
+        "toggle-mod": toggle_mod,
+        "enable-def": def_enable,
+        "rules": rules,
+      };
+    }
+
+    function E(n) {
+      return document.getElementById(n);
+    }
+
+    function newTd(value, tdid=null) {
+      var ret = document.createElement("td");
+      if (tdid)
+        ret.setAttribute("id", tdid);
+      if (typeof value === 'string' || value instanceof String)
+        value = document.createTextNode(value);
+
+      ret.appendChild(value);
+      return ret;
+    }
+    function newTdHTML(value, cln=[]) {
+      var ret = document.createElement("td");
+      for (var i = 0; i < cln.length; i++)
+        ret.classList.add(cln[i]);
+      ret.innerHTML = value;
+      return ret;
+    }
+    function newInput(iid, value) {
+      var ret = document.createElement("input");
+      ret.setAttribute("id", iid);
+      ret.setAttribute("type", "text");
+      ret.setAttribute("value", value);
+      return ret;
+    }
+    function newCombo(cid, l, sel) {
+      var ret = document.createElement("select");
+      ret.setAttribute("id", cid);
+      for (var i = 0; i < l.length; i++) {
+        var e = document.createElement("option");
+        e.value = l[i][0];
+        e.innerHTML = l[i][1];
+        ret.appendChild(e);
+      }
+      ret.value = sel;
+      ret.setAttribute("onchange", cid + "_update()");
+      return ret;
+    }
+
+    function ruleedt(nrule) {
+      refresh_rules(fakecfg["rules"], nrule);
+    }
+
+    function saverule(nrule) {
+      // Validate input values
+      if (isNaN(E("iper").value)) {
+        alert("Period must be an integer number!");
+        return;
+      }
+      var p = parseInt(E("iper").value, 10);
+      if (p <= 0 || p > 31536000000) {
+        alert("Period must be a number between 1 and 31536000000!");
+        return;
+      }
+
+      fakecfg["rules"][nrule]["period"] = p;
+      fakecfg["rules"][nrule]["rtype"] = parseInt(E("itype").value);
+      fakecfg["rules"][nrule]["rmode"] = parseInt(E("imode").value);
+      fakecfg["rules"][nrule]["rdata"] = parseInt(E("idata").value);
+
+      // Refresh list with freshly stored data
+      refresh_rules(fakecfg["rules"]);
+    }
+
+    function discrule(nrule) {
+      refresh_rules(fakecfg["rules"]);
+    }
+
+    function ruledel(nrule) {
+      fakecfg["rules"].splice(nrule, 1);
+      refresh_rules(fakecfg["rules"]);
+    }
+
+    function addrule() {
+      if (fakecfg["rules"].length >= MAX_RULES)
+        alert("Cannot add more than 8 rules!");
+      else {
+        fakecfg["rules"].push({
+          "period": 60000,
+          "rtype":  0,
+          "rdata":  1,
+          "rmode":  0,
+          "rflag":  0,
+        });
+        refresh_rules(fakecfg["rules"], fakecfg["rules"].length - 1);
+      }
+    }
+
+    function itype_update() {
+      // Reload imode combo with new options
+      var opts = mode_desc_combo[E("itype").value];
+      E("imode_combo").innerHTML = "";
+      E("imode_combo").appendChild(newCombo("imode", opts, 0));
+      // Force the other components to refresh too
+      imode_update();
+    }
+
+    function imode_update() {
+      // Reload data column with appropiate input
+      var typeopt = mode_desc[E("itype").value][E("imode").value];
+      E("idata_td").innerHTML = "";
+      if (Array.isArray(typeopt[2]))
+        E("idata_td").appendChild(newCombo("idata", typeopt[2], 0));
+      else
+        E("idata_td").appendChild(newInput("idata", 0));
+    }
+
+    function refresh_rules(rl, selected = -1) {
+      E("rule_body").innerHTML = "";
+
+      for (var i = 0; i < rl.length; i++) {
+        if (!rl[i]["period"]) continue;
+
+        if (i == selected) {
+          var row = document.createElement("tr");
+          row.appendChild(newTd((i+1) + "."));
+          row.appendChild(newTd(newInput("iper", rl[i]["period"])));
+          row.appendChild(newTd(newCombo("itype", devt_desc_combo, rl[i]["rtype"]), "itype_combo"));
+          row.appendChild(newTd(newCombo("imode", mode_desc_combo[rl[i]["rtype"]], rl[i]["rmode"]), "imode_combo"));
+
+          var typeopt = mode_desc[rl[i]["rtype"]][rl[i]["rmode"]];
+          if (Array.isArray(typeopt[2]))
+            row.appendChild(newTd(newCombo("idata", typeopt[2], rl[i]["rdata"]), "idata_td"));
+          else
+            row.appendChild(newTd(newInput("idata", rl[i]["rdata"]), "idata_td"));
+
+          row.appendChild(newTdHTML(
+             '<button class="button button-outline button-inline" onclick="saverule(' + i + ')">💾️</button> ' +
+             '<button class="button button-outline button-inline" onclick="discrule(' + i + ')">✖️</button>', "lasttd"));
+        } else {
+          var row = document.createElement("tr");
+          row.appendChild(newTd((i+1) + "."));
+          row.appendChild(newTd(fmtTime(rl[i]["period"])));
+          row.appendChild(newTd(devt_desc[rl[i]["rtype"]]));
+          var typeopt = mode_desc[rl[i]["rtype"]][rl[i]["rmode"]];
+          row.appendChild(newTdHTML(
+            typeopt[0] + ' <div class="tooltip">ℹ️ <span class="tooltiptext">' + typeopt[1] + '</span></div>'
+          ));
+
+          if (Array.isArray(typeopt[2])) {
+            for (var j = 0; j < typeopt[2].length; j++)
+              if (typeopt[2][j][0] == rl[i]["rdata"])
+                row.appendChild(newTd(typeopt[2][j][1]));
+          }
+          else
+            row.appendChild(newTd(rl[i]["rdata"] + typeopt[2]));
+
+          row.appendChild(newTdHTML(selected >= 0 ? "" :
+            '<button class="button button-outline button-inline" onclick="ruleedt(' + i + ')">✏️</button> ' +
+            '<button class="button button-outline button-inline" onclick="ruledel(' + i + ')">🗑️  </button>', "lasttd"));
+        }
+
+        E("rule_body").appendChild(row);
+      }
+    }
+
+    function refresh_config(fakecfg) {
+      var kv = E("modekey").value = fakecfg["toggle-key"];
+      if (kv != 0xff) {
+        E("def_ena").checked = fakecfg["enable-def"];
+        E("modetime").value = fakecfg["toggle-mod"];
+        E("def_ena").disabled = false;
+        E("modetime").disabled = false;
+      } else {
+        E("def_ena").checked = true;
+        E("modetime").value = 0;
+        E("def_ena").disabled = true;
+        E("modetime").disabled = true;
+      }
+
+      refresh_rules(fakecfg["rules"]);
+
+      // Pick the correct VID/PID device
+      var vpsel = E("vidpid");
+      var exactm = fakecfg["vid-pid"] + "|" + fakecfg["manufacturer"] + "|" + fakecfg["product"];
+
+      for (var i = 0; i < vpsel.length; i++)
+        if (vpsel.options[i].value == exactm) {
+          vpsel.value = exactm;
+          return;
+        }
+
+      for (var i = 0; i < vpsel.length; i++) {
+        if (fakecfg["vid-pid"] == vpsel.options[i].value.substring(0, 8)) {
+          vpsel.value = vpsel.options[i].value;
+          return;
+        }
+      }
+    }
+
+    var device = null;
+    var fakecfg = null;
+    function pageload() {
+      for (var i = 0; i < mode_desc.length; i++) {
+        var l = [];
+        for (var j = 0; j < mode_desc[i].length; j++)
+          l.push([ j, mode_desc[i][j][0] ]);
+        mode_desc_combo.push(l);
+      }
+      for (var i = 0; i < devt_desc.length; i++)
+        devt_desc_combo.push([i, devt_desc[i]]);
+
+      E('cfg-rld').onclick = async () => {
+        // Read current configuration
+        var rawcfg = await device.controlTransferIn({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xfe,  // Read config
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        }, 1024);
+
+        if (rawcfg.status != "ok" || rawcfg.data.getUint32(0, true) != CFG_MAGIC)
+          return;
+
+        fakecfg = parseConfig(rawcfg);
+        refresh_config(fakecfg);
+      };
+
+      E('cfg-save').onclick = push_config;
+      E('disco').onclick = disconnect_device;
+
+      E('cfgwipe').onclick = async () => {
+        await device.controlTransferOut({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xfc,  // Wipe configuration and reboot
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        });
+        await disconnect_device();
+        alert("Device configuration wiped and rebooted!");
+      };
+
+      E('godfu').onclick = async () => {
+        await device.controlTransferOut({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xff,  // Reboot into DFU
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        });
+        await disconnect_device();
+        alert("Device rebooted into DFU mode!");
+      };
+
+      E('connbutt').onclick = async () => {
+        let filters = [];
+        //filters.push({ 'serialNumber': serial });
+        device = await navigator.usb.requestDevice({ 'filters': filters });
+
+        await device.open();
+
+        if (device.configurations.length != 1 ||
+            device.configurations[0].interfaces.length != 3)
+          return connectError("This device doesn't seem compatible!");
+
+        let iface2 = device.configurations[0].interfaces[2];
+        if (iface2.alternates[0].interfaceClass != 255 /* Custom */ ||
+            iface2.alternates[0].interfaceSubclass != 255) /* Custom/Reserved */
+          return connectError("This device doesn't seem compatible!");
+
+        await device.selectConfiguration(1);
+        await device.claimInterface(2);
+        var dinfo = await device.controlTransferIn({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xfd,  // Get info
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        }, 1024);
+
+        // Parse device info, update page
+        if (dinfo.status != "ok" || dinfo.data.byteLength != 64 ||
+            dinfo.data.getUint32(0, true) != CFG_MAGIC)
+          return connectError("Unexpected device response, is the device too old or too new?");
+        var data_ver = dinfo.data.getUint32(4, true);
+        var decoder = new TextDecoder("utf-8");
+        var fw_ver = decoder.decode(dinfo.data.buffer.slice(8));
+        var cfg_ver = (data_ver >> 16).toString() + "." + (data_ver & 0xffff).toString();
+        E("fwver").setHTML(fw_ver);
+        E("cfgver").setHTML(cfg_ver);
+        E("config_devinfo").classList.remove("invisible");
+
+        // Read current configuration
+        var rawcfg = await device.controlTransferIn({
+          requestType: 'standard',
+          recipient: 'interface',
+          request: 0xfe,  // Read config
+          value: 0xd1bd,  // Magic key
+          index: 0x0002   // Interface 2
+        }, 1024);
+
+        if (rawcfg.status != "ok" || rawcfg.data.getUint32(0, true) != CFG_MAGIC)
+          return connectError("Unexpected device response, is the device too old or too new?");
+
+        fakecfg = parseConfig(rawcfg);
+        refresh_config(fakecfg);
+
+        E("config_editor").classList.remove("invisible");
+        E("connbutt").classList.add("invisible");
+      };
+    }
+
+    window.onload = pageload;
+  </script>
+</head>
+<body>
+  <center>
+    <h1 class="title"><i>magicmouse</i> configurator</h1>
+  </center>
+
+  <div id="cont1" class="container">
+    <center>
+      <button id="connbutt" class="button">Connect to device</button>
+    </center>
+  </div>
+
+  <div id="cont2" class="container">
+
+    <div id="config_devinfo" class="invisible">
+      <h3>Device information</h3>
+      <p>
+        <b>Firmware version:</b> <span id="fwver"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Configuration version:</b> <span id="cfgver"></span>
+        <div>
+          <button id="disco" class="button">Disconnect device</button>
+          <button id="cfgwipe" class="button button-outline">Configuration wipe</button>
+          <button id="godfu" class="button button-danger float-right">Reboot to DFU mode</button>
+        </div>
+      </p>
+    </div>
+
+    <div id="config_editor" class="invisible">
+      <h3>Edit configuration</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Every</th>
+            <th>Device type</th>
+            <th>Action</th>
+            <th>Arguments</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="rule_body">
+        </tbody>
+      </table>
+      <button id="add-rule" class="button button-outline float-right" onclick="addrule()">Add rule</button>
+
+      <h3>Advanced options</h3>
+
+      <div>
+        <h4>Enable/Disable key</h4>
+        <select id="modekey" class="inline-sel">
+          <option value="255">Disable</option>
+          <option value="0">Num lock</option>
+          <option value="1">Caps lock</option>
+          <option value="2">Scroll lock</option>
+        </select>
+        <select id="modetime" class="inline-sel">
+          <option value="0">Press 4 times in one second</option>
+          <option value="1">Press 6 times in two seconds</option>
+          <option value="2">Press 8 times in three seconds</option>
+        </select>
+      </div>
+
+      <input type="checkbox" id="def_ena"/> <label for="def_ena">Automatically enable on startup</label>
+      <hr/>
+
+      <div>
+        <h4>Device to impersonate</h4>
+        <select id="vidpid">
+        
+          <option value="045e07fd|Microsoft|Microsoft Nano Transceiver 1.1">045e:07fd - Microsoft | Microsoft Nano Transceiver 1.1</option>
+          <option value="046dc52e|Logitech|USB Receiver">046d:c52e - Logitech, Inc. | USB Receiver</option>
+          <option value="046dc534|Logitech|USB Receiver">046d:c534 - Logitech, Inc. | Unifying Receiver</option>
+          <option value="248a8367|Telink|Wireless Receiver">248a:8367 - Maxxter | Telink Wireless Receiver</option>
+          <option value="062a4101|MOSART Semi.|2.4G Keyboard Mouse">046d:c52e - MosArt Semiconductor Corp. | Wireless Keyboard/Mouse</option>
+        </select>
+      </div>
+
+      <button id="cfg-rld" class="button button-outline">Reload configuration</button>
+      <button id="cfg-save" class="button float-right">Save configuration</button>
+    </div>
+  </div>
+
+  <div class="footer-ver">
+    Version 1.0
+  </div>
+
+</body>
+</html>

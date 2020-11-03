@@ -1,0 +1,6 @@
+[submodule "libopencm3"]
+	path = libopencm3
+	url = https://github.com/libopencm3/libopencm3.git
+[submodule "stm32-bootloader"]
+	path = stm32-bootloader
+	url = https://github.com/davidgfnet/stm32-dfu-bootloader.git
