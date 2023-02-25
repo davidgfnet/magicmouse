@@ -1,0 +1,37 @@
+name: Publish configurator tool
+run-name: Publishes the HTML configurator tool to Github Pages
+
+on:
+  push:
+    branches: ["master"]
+
+# Allow gh-pages updates
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  generate-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Generate webroot
+        run: mkdir -p ./output-pages && cp ./config.html ./output-pages/index.html
+      - name: Upload assets
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./output-pages/
+
+  deploy-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: generate-pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
+
