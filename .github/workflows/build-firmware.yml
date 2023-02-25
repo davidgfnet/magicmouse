@@ -17,6 +17,9 @@ jobs:
           submodules: recursive
       - name: Build firmware image
         run: make magicmouse.bin
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
       - name: Upload artifacts
         if: ${{ success() }}
         uses: actions/upload-artifact@v2
